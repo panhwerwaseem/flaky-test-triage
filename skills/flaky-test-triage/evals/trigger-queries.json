@@ -1,0 +1,27 @@
+{
+  "skill_name": "flaky-test-triage",
+  "should_trigger": [
+    "test_checkout_total fails about one run in ten on CI and passes when I re-run the job",
+    "our e2e suite is flaky, the login spec times out randomly",
+    "this test passes locally every time but fails on the build server sometimes",
+    "someone wrapped test_sync in @retry(3) because it was intermittent, can we fix it properly",
+    "the nightly build went red, then green on retry, with no commits in between",
+    "we have 14 quarantined tests, help me get the first one out of quarantine",
+    "jest test fails only when the whole suite runs, passes with -t",
+    "is test_export_csv actually nondeterministic or was that failure a one-off?",
+    "go test -race shows nothing but TestWorkerPool fails 1 in 50 runs",
+    "I bumped the timeout twice and this Playwright test still fails sometimes"
+  ],
+  "should_not_trigger": [
+    "test_checkout_total fails every time since my last commit",
+    "write unit tests for the new pricing module",
+    "our test suite takes 40 minutes, how do we make it faster",
+    "set up pytest and coverage for this repo",
+    "the build fails with a syntax error in app.py",
+    "add retries with backoff to the payment API client",
+    "review my pull request for bugs",
+    "why does this function return different results for the same input in production",
+    "convert these Mocha tests to Vitest",
+    "explain what a race condition is"
+  ]
+}

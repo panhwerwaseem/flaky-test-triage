@@ -1,0 +1,15 @@
+{
+  "name": "panhwerwaseem-flaky-test-triage",
+  "owner": {
+    "name": "Muhammad Waseem Panhwar",
+    "url": "https://github.com/panhwerwaseem"
+  },
+  "description": "Single-skill marketplace for flaky-test-triage.",
+  "plugins": [
+    {
+      "name": "flaky-test-triage",
+      "source": "./",
+      "description": "Reproduces a flaky test, measures its failure rate, classifies the root cause, and proves the fix with a computed number of repeated passing runs."
+    }
+  ]
+}

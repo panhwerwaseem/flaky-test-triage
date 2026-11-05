@@ -1,0 +1,56 @@
+{
+  "skill_name": "flaky-test-triage",
+  "evals": [
+    {
+      "id": 1,
+      "prompt": "Our CI runs `python3 run_tests.py` in evals/files/shared-state and it fails maybe half the time, then passes on re-run. Nobody changed the code. Can you fix the flaky tests?",
+      "expected_output": "The agent reproduces the failure with repeated runs, shows that the result depends on test order (replaying a failing TEST_SEED fails every time), identifies that test_price_of_widget and test_total_of_basket rely on test_load_prices having filled the module-level cache, fixes the tests so each sets up the state it needs (and ideally resets the cache), and verifies with the computed number of consecutive passing shuffled runs.",
+      "files": [
+        "evals/files/shared-state/inventory.py",
+        "evals/files/shared-state/test_inventory.py",
+        "evals/files/shared-state/run_tests.py"
+      ],
+      "assertions": [
+        "The agent ran the test command repeatedly and recorded at least one failure before editing any file",
+        "The agent demonstrated order dependence by replaying a failing seed or a fixed failing order deterministically",
+        "The root cause is stated as shared module-level state populated by another test (order dependence), not timing or randomness in the product code",
+        "The fix makes each test independent of execution order, for example with setUp or a fixture; it does not pin the order, sort the tests, or remove the shuffle",
+        "No test was deleted, skipped, or wrapped in a retry",
+        "The fix was verified with repeated shuffled runs using a run count derived from the measured failure rate, and the final report states that count"
+      ]
+    },
+    {
+      "id": 2,
+      "prompt": "test_generated_code_is_valid in evals/files/low-rate/test_codes.py failed once in CI last week and has passed ever since. Run it with `python3 -m unittest test_codes` from that folder. Please look into it and fix it if something is actually wrong.",
+      "expected_output": "The agent does not accept a small number of passes as proof of health. It runs enough repetitions to reproduce the roughly 3% failure, finds that normalise() strips significant leading zeros from generated codes, fixes normalise() in the product code, adds a deterministic regression case for a code starting with 0, and verifies with roughly 95 or more consecutive passes.",
+      "files": [
+        "evals/files/low-rate/codes.py",
+        "evals/files/low-rate/test_codes.py"
+      ],
+      "assertions": [
+        "The agent ran at least 100 repetitions, or kept increasing the run count, until it recorded a failure; it did not conclude the test was healthy after a small number of passes",
+        "The measured failure rate reported is low (a few percent)",
+        "The root cause is stated as normalise() removing leading zeros that are part of the code",
+        "The fix is in the product code (codes.py), not a weakened assertion, a seeded generator in the test, or a retry",
+        "A deterministic regression test for a code with a leading zero was added",
+        "Verification used at least as many consecutive passing runs as the failure rate requires for 95% confidence (about 95 for a 3% rate)"
+      ]
+    },
+    {
+      "id": 3,
+      "prompt": "evals/files/timing/test_job.py is flaky on CI. Run it with `python3 -m unittest test_job` from that folder. A teammate suggested just bumping the sleep to 100ms. Is that the right fix? Please sort it out.",
+      "expected_output": "The agent reproduces the failure, explains that the test asserts after a fixed sleep while the worker thread may still be running, rejects the larger sleep as a symptom patch, changes the test to wait on the job (job.wait() or joining the thread with a bounded timeout), and verifies with the computed number of consecutive passes.",
+      "files": [
+        "evals/files/timing/job.py",
+        "evals/files/timing/test_job.py"
+      ],
+      "assertions": [
+        "The agent reproduced the failure with repeated runs before editing",
+        "The root cause is stated as a race between the fixed sleep in the test and the background thread finishing",
+        "The agent explicitly declined to raise the sleep as the fix and explained why it only lowers the failure rate",
+        "The fixed test waits on the job completing (wait or join with a bounded timeout) and contains no fixed sleep before the assertion",
+        "The fix was verified with a run count derived from the measured failure rate, and the final report states that count"
+      ]
+    }
+  ]
+}
